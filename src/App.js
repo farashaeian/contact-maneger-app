@@ -5,7 +5,7 @@ import axios from "axios";
 // import Navbar from "./components/Navbar"
 import { AddContact, EditContact, ViewContact, Contacts, Contact, Navbar } from "./components";
 
-import {getAllContacts, getAllGroups} from "./services/contactService";
+import { getAllContacts, getAllGroups, createContact } from "./services/contactService";
 
 import './App.css';
 
@@ -15,13 +15,14 @@ const App = () => {
   const [getContacts, setContacts] = useState([]);
   const [getGroups, setGroups] = useState([]);
   const [getContact, setContact] = useState({
-    fullname:"",
-    photo:"",
-    mobile:"",
-    email:"",
-    job:"",
-    group:"",
+    fullname: "",
+    photo: "",
+    mobile: "",
+    email: "",
+    job: "",
+    group: "",
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,9 +30,9 @@ const App = () => {
         setLoading(true);
         // const response = await axios.get("http://localhost:9000/contacts");
         // const {data : contactsData} = await axios.get("http://localhost:9000/contacts");
-        const {data : contactsData} = await getAllContacts();
+        const { data: contactsData } = await getAllContacts();
         // const {data : groupsData} = await axios.get("http://localhost:9000/groups");
-        const {data : groupsData} = await getAllGroups();
+        const { data: groupsData } = await getAllGroups();
 
         setContacts(contactsData);
         setGroups(groupsData);
@@ -46,8 +47,21 @@ const App = () => {
     fetchData();
   }, []);
 
-  const setContactInfo = (event) =>{
-    setContact({...getContact, [event.target.name] : event.target.value});
+  const createContactForm = async (event) => {
+    event.preventDefault();
+    try{
+       const {status} = await createContact(getContact);
+       if(status === 201){
+        setContact({});
+        navigate("/contacts");
+       }
+    } catch (err){
+      console.log(err.messsage);
+    }
+  }
+
+  const setContactInfo = (event) => {
+    setContact({ ...getContact, [event.target.name]: event.target.value });
   }
 
   return (
@@ -57,7 +71,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/contacts" />} />
         <Route path="/contacts" element={<Contacts contacts={getContacts} loading={loading} />} />
-        <Route path="/contacts/add" element={<AddContact loading={loading} setContactInfo={setContactInfo} contact={getContact} groups={getGroups}/>} />
+        <Route path="/contacts/add" element={<AddContact loading={loading} setContactInfo={setContactInfo} contact={getContact} groups={getGroups} createContactForm={createContactForm}/>} />
         <Route path="/contacts/:contactId" element={<Contact />} />
         <Route path="/contacts/edit/:contactId" element={<EditContact />} />
       </Routes>

@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 
 import Spinner from "../Spinner";
 import { Comment, Green, Purple } from "../../helpers/colors";
+import { createContact } from "../../services/contactService";
 
-const AddContact = ({ loading, contact, setContactInfo, groups }) => {
+const AddContact = ({ loading, contact, setContactInfo, groups, createContactForm }) => {
+    console.log(groups);
     return (
         <>
             {loading ? <Spinner /> : (
@@ -21,7 +23,7 @@ const AddContact = ({ loading, contact, setContactInfo, groups }) => {
                             <hr style={{ backgroundColor: Green }} />
                             <div className="row mt-5">
                                 <div className="col-md-4">
-                                    <form>
+                                    <form onSubmit={createContactForm}>
                                         <div className="mb-2">
                                             <input name="fullname" value={contact.fullname} onChange={setContactInfo} type="text" className="form-control" placeholder="نام و نام خانوادگی" required={true} />
                                         </div>
@@ -40,7 +42,7 @@ const AddContact = ({ loading, contact, setContactInfo, groups }) => {
                                         <div className="mb-2">
                                             <select name="group" value={contact.group} onChange={setContactInfo} required={true} className="form-control">
                                                 <option value="">انتخاب گروه</option>
-                                                {groups.lenght > 0 && groups.map((group) => (
+                                                {Object.keys(groups).length > 0 && groups.map((group) => (
                                                     <option key={group.id} value={group.id}>
                                                         {group.name}
                                                     </option>
